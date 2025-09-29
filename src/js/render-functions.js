@@ -59,3 +59,11 @@ export function showLoader() {
 export function hideLoader() {
     document.querySelector(".loader").classList.add("hidden");
 }
+
+export function showLoadMoreButton() {
+
+}
+
+export function hideLoadMoreButton() {
+    
+}
