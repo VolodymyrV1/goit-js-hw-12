@@ -17,7 +17,7 @@
 
 
 .form input,
-.form button {
+.btn {
   height: 40px;
   padding: 0 12px;
   border-radius: 6px;
@@ -31,7 +31,7 @@
   width: 272px;
 }
 
-.form button {
+.btn {
   border: none;
   background-color: #4e75ff;;
   color: white;
@@ -40,7 +40,7 @@
   width: 91px;
 }
 
-.form button:hover {
+.btn:hover {
   background-color: #303f9f;
 }
 
@@ -56,7 +56,7 @@
 }
 
 
-.gallery {
+/* .gallery {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px;
@@ -65,7 +65,16 @@
   margin: 40px auto;
   max-width: 1400px;
 }
-
+ */
+ .gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  list-style: none;
+  padding: 0;
+  margin: 40px auto;
+  max-width: 1400px;
+}
 
 
 
@@ -165,3 +174,17 @@
 .hidden {
   display: none;
 }
+
+
+.container {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;   
+}
+
+.moreBtn {
+  width: 125px;
+}
+
+
+

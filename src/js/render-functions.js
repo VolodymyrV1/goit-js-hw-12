@@ -60,10 +60,14 @@ export function hideLoader() {
     document.querySelector(".loader").classList.add("hidden");
 }
 
+// Ця функція нічого не приймає, повинна додавати клас для відображення кнопки Load more. Нічого не повертає.
 export function showLoadMoreButton() {
+    document.querySelector(".moreBtn").classList.remove("hidden");
 
 }
 
+// Ця функція нічого не приймає, повинна прибирати клас для відображення кнопки Load more. Нічого не повертає.
 export function hideLoadMoreButton() {
+    document.querySelector(".moreBtn").classList.add("hidden");
     
 }

@@ -3,13 +3,12 @@ import './css/comon.css';
 import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 
-import getImagesByQuery from "./js/pixabay-api";
-import { createGallery, clearGallery, showLoader, hideLoader } from "./js/render-functions";
+import getImagesByQuery, { per_page } from "./js/pixabay-api";
+import { createGallery, clearGallery, showLoader, hideLoader, showLoadMoreButton, hideLoadMoreButton } from "./js/render-functions";
 
 
 const form = document.querySelector(".form");
-const searchBtn = document.querySelector(".searchBtn");
-const moreBtn = document.querySelector(".moreBtn");
+const moreBtn = document.querySelector(".moreBtn")
 let searchResult;
 
 let page;
@@ -18,10 +17,10 @@ let page;
 form.addEventListener("submit", handlerSubmit);
 moreBtn.addEventListener("click", onLoadMore);
 
-function handlerSubmit(event) {
+async function handlerSubmit(event) {
     event.preventDefault();
-    page = 32;
-    searchBtn.disabled = true;
+    page = 1;
+
     clearGallery();
     searchResult = event.target.elements['search-text'].value.trim();
 
@@ -33,31 +32,34 @@ function handlerSubmit(event) {
 
     showLoader();
     
-    getImagesByQuery(searchResult, page)
-        .then((data) => {
-           
-            if (data.hits.length === 0) {
+
+    try {
+        const data = await getImagesByQuery(searchResult, page);
+        
+        if (data.hits.length === 0) {
                 showToast("Sorry, there are no images matching your search query. Please try again!");
+                hideLoadMoreButton();
                 return;
             }       
-            createGallery(data.hits);
-            console.log(data.hits);
-            moreBtn.classList.remove("hidden");
-            // if(data.totalHits ) {
-            //     console.log("hyetaaa");
-                
-            // }
+        createGallery(data.hits);
+        form.reset();  
+
             
-        })
-        .catch((error) => {
-            showToast(`EROR, ${error}`);
-            console.log(error);     
-        })
-        .finally(() => {            
-            hideLoader();
-        })
-    
-        form.reset()   
+
+        if (checkLastPage(data, page, per_page)) {
+            endOfResults();
+        } else {
+            showLoadMoreButton();
+            }         
+
+    } catch (error) {
+        showToast(`EROR, ${error}`);
+        console.log(error);
+        hideLoadMoreButton();
+         
+    } finally {
+        hideLoader(); 
+    }        
 }
 
 async function onLoadMore() {
@@ -67,30 +69,26 @@ async function onLoadMore() {
 
         try {
             const data = await getImagesByQuery(searchResult, page);
-            console.log(data);
-            console.log(page);
             
             createGallery(data.hits);
+            if (checkLastPage(data, page, per_page)) {
+                endOfResults();
+            }
 
-
-        } catch(error) {
-            console.log(error);
-            
-            
-        } finally {
-            
+        } catch (error) {
+            showToast(`EROR, ${error}`);
+            console.log(error);               
+        } finally {           
             moreBtn.disabled = false;
             hideLoader();
-
-        }
-    
+        }   
 }
 
 
 
 
 
-function showToast(message, ) {
+function showToast(message) {
     iziToast.error({
         message,
         position: 'topRight',
@@ -100,18 +98,14 @@ function showToast(message, ) {
 }
 
 
-function totalHits(data) {
-    const totalPage = Math.ceil(data.totalHits / data.length)
-    console.log(totalPage);
-    
-    if(page > totalPage ) {
-        console.log("HYETAAAAAA");
-        moreBtn.classList.add("hidden");
-        console.log(totalPage);
-        
-        
-    }
-    
+function checkLastPage(data, page, per_page) {
+    const totalPage = Math.ceil(data.totalHits / per_page);
+    return page >= totalPage;    
 }
 
+
+function endOfResults() {
+    hideLoadMoreButton();
+    showToast("We're sorry, but you've reached the end of search results.");
+}
     
