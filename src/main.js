@@ -9,6 +9,7 @@ import { createGallery, clearGallery, showLoader, hideLoader, showLoadMoreButton
 
 const form = document.querySelector(".form");
 const moreBtn = document.querySelector(".moreBtn")
+
 let searchResult;
 
 let page;
@@ -41,10 +42,7 @@ async function handlerSubmit(event) {
                 hideLoadMoreButton();
                 return;
             }       
-        createGallery(data.hits);
-        form.reset();  
-
-            
+        createGallery(data.hits);         
 
         if (checkLastPage(data, page, per_page)) {
             endOfResults();
@@ -59,7 +57,9 @@ async function handlerSubmit(event) {
          
     } finally {
         hideLoader(); 
+        form.reset();
     }        
+    
 }
 
 async function onLoadMore() {
@@ -71,6 +71,7 @@ async function onLoadMore() {
             const data = await getImagesByQuery(searchResult, page);
             
             createGallery(data.hits);
+            scrollGallery();
             if (checkLastPage(data, page, per_page)) {
                 endOfResults();
             }
@@ -86,16 +87,22 @@ async function onLoadMore() {
 
 
 
-
-
-function showToast(message) {
-    iziToast.error({
+function showToast(message, backgroundColor = '#EF4040', showIcon = true) {
+    const options = {
         message,
         position: 'topRight',
-        backgroundColor: '#EF4040',
+        backgroundColor,
         messageColor: '#ffffff',
-    });
+    };
+
+    if (!showIcon) {
+        options.icon = false;
+    }
+
+    iziToast.error(options);
 }
+
+
 
 
 function checkLastPage(data, page, per_page) {
@@ -106,6 +113,20 @@ function checkLastPage(data, page, per_page) {
 
 function endOfResults() {
     hideLoadMoreButton();
-    showToast("We're sorry, but you've reached the end of search results.");
+    showToast("We're sorry, but you've reached the end of search results.", "#3A86FF", false);
+}
+
+function scrollGallery() {
+    const card = document.querySelector(".gallery .photo-card");
+    if (!card) {
+        return;
+    }
+
+    const cardHeight = card.getBoundingClientRect().height;
+
+    window.scrollBy({
+        top: cardHeight * 2,
+        behavior: "smooth"
+    });
 }
     
